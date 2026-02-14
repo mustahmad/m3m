@@ -1,0 +1,15 @@
+services:
+  - type: web
+    name: m3m
+    runtime: node
+    buildCommand: npm ci && npm run build
+    startCommand: npx tsx packages/backend/src/index.ts
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 3001
+    disk:
+      name: m3m-data
+      mountPath: /opt/render/project/src/packages/backend/data
+      sizeGB: 1

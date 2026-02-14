@@ -7,7 +7,8 @@
   ],
   "scripts": {
     "dev": "concurrently -n backend,frontend -c blue,green \"npm run dev -w packages/backend\" \"npm run dev -w packages/frontend\"",
-    "build": "npm run build -w packages/backend && npm run build -w packages/frontend"
+    "build": "npm run build -w packages/frontend",
+    "start": "npx tsx packages/backend/src/index.ts"
   },
   "devDependencies": {
     "concurrently": "^9.1.0",
