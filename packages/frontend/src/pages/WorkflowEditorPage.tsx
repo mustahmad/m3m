@@ -5,6 +5,8 @@ import { Sidebar } from '../components/layout/Sidebar';
 import { WorkflowCanvas } from '../components/editor/WorkflowCanvas';
 import { NodeConfigPanel } from '../components/panels/NodeConfigPanel';
 import { EditorTour } from '../components/onboarding/EditorTour';
+import { WorkflowBuilder } from '../components/builder/WorkflowBuilder';
+import type { PlacedWorkflow } from '../components/builder/generateWorkflow';
 import { useWorkflow } from '../hooks/useWorkflow';
 import { useExecution } from '../hooks/useExecution';
 import { useWorkflowStore } from '../stores/workflowStore';
@@ -18,7 +20,10 @@ export function WorkflowEditorPage() {
   const { isLoading, error, save } = useWorkflow(workflowId);
   const { execute } = useExecution();
   const selectedNodeId = useWorkflowStore((s) => s.selectedNodeId);
+  const setWorkflow = useWorkflowStore((s) => s.setWorkflow);
+  const storeWorkflowId = useWorkflowStore((s) => s.workflowId);
   const [showTour, setShowTour] = useState(false);
+  const [showBuilder, setShowBuilder] = useState(false);
   const { t } = useI18n();
 
   useEffect(() => {
@@ -52,6 +57,18 @@ export function WorkflowEditorPage() {
     await execute();
   }, [save, execute]);
 
+  const handleApplyWorkflow = useCallback((workflow: PlacedWorkflow) => {
+    setWorkflow(
+      storeWorkflowId || '',
+      workflow.name,
+      workflow.nodes as any,
+      workflow.edges as any,
+      { x: 0, y: 0, zoom: 1 },
+    );
+    // Mark dirty so user can save
+    useWorkflowStore.setState({ isDirty: true });
+  }, [setWorkflow, storeWorkflowId]);
+
   if (isLoading) {
     return (
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', color: 'var(--text-muted)' }}>
@@ -70,13 +87,14 @@ export function WorkflowEditorPage() {
 
   return (
     <div className="editor-layout">
-      <Header onSave={save} onRun={handleRun} onHelp={() => setShowTour(true)} />
+      <Header onSave={save} onRun={handleRun} onHelp={() => setShowTour(true)} onBuilder={() => setShowBuilder(true)} />
       <div className="editor-body">
         <Sidebar />
         <WorkflowCanvas />
         {selectedNodeId && <NodeConfigPanel />}
       </div>
       {showTour && <EditorTour onComplete={completeTour} />}
+      {showBuilder && <WorkflowBuilder onClose={() => setShowBuilder(false)} onApply={handleApplyWorkflow} />}
     </div>
   );
 }

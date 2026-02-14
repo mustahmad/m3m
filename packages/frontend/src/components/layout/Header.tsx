@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { Save, Play, ArrowLeft, HelpCircle, Globe } from 'lucide-react';
+import { Save, Play, ArrowLeft, HelpCircle, Globe, Bot } from 'lucide-react';
 import { useWorkflowStore } from '../../stores/workflowStore';
 import { useI18n, type Locale } from '../../i18n/store';
 
@@ -7,9 +7,10 @@ interface HeaderProps {
   onSave: () => void;
   onRun: () => void;
   onHelp?: () => void;
+  onBuilder?: () => void;
 }
 
-export function Header({ onSave, onRun, onHelp }: HeaderProps) {
+export function Header({ onSave, onRun, onHelp, onBuilder }: HeaderProps) {
   const workflowName = useWorkflowStore((s) => s.workflowName);
   const setWorkflowName = useWorkflowStore((s) => s.setWorkflowName);
   const isDirty = useWorkflowStore((s) => s.isDirty);
@@ -36,6 +37,11 @@ export function Header({ onSave, onRun, onHelp }: HeaderProps) {
           <Globe size={16} />
           <span className="locale-label">{locale.toUpperCase()}</span>
         </button>
+        {onBuilder && (
+          <button className="builder-btn" onClick={onBuilder} title={t('builder.openBuilder')}>
+            <Bot size={14} /> {t('builder.openBuilder')}
+          </button>
+        )}
         {onHelp && (
           <button className="btn-icon" onClick={onHelp} title={t('header.showTutorial')}>
             <HelpCircle size={18} />

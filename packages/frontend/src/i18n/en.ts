@@ -285,6 +285,21 @@ export const en = {
     pending: 'pending',
   },
   executionResult: 'Execution Result',
+  builder: {
+    title: 'AI Workflow Builder',
+    settings: 'Settings',
+    provider: 'Provider',
+    apiKey: 'API Key',
+    emptyHint: 'Describe what automation you need and AI will build the workflow for you',
+    suggestion1: 'Webhook that checks if request has auth token, logs it, and returns response',
+    suggestion2: 'Schedule every hour: fetch API data, filter by status, send email notification',
+    suggestion3: 'Receive webhook, classify text with AI, route to different handlers based on category',
+    thinking: 'Building workflow...',
+    generated: 'Created workflow "{name}" with {nodeCount} nodes and {edgeCount} connections:',
+    applyWorkflow: 'Apply to Canvas',
+    inputPlaceholder: 'Describe the automation you need...',
+    openBuilder: 'AI Builder',
+  },
 } as const;
 
 export type Translations = typeof en;
