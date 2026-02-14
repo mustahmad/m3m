@@ -8,6 +8,7 @@ import { EditorTour } from '../components/onboarding/EditorTour';
 import { useWorkflow } from '../hooks/useWorkflow';
 import { useExecution } from '../hooks/useExecution';
 import { useWorkflowStore } from '../stores/workflowStore';
+import { useI18n } from '../i18n/store';
 
 const TOUR_DONE_KEY = 'm3m_tour_done';
 
@@ -18,8 +19,8 @@ export function WorkflowEditorPage() {
   const { execute } = useExecution();
   const selectedNodeId = useWorkflowStore((s) => s.selectedNodeId);
   const [showTour, setShowTour] = useState(false);
+  const { t } = useI18n();
 
-  // Show tour if ?tour=1 or if never shown before
   useEffect(() => {
     if (!isLoading && !error) {
       const tourRequested = searchParams.get('tour') === '1';
@@ -35,7 +36,6 @@ export function WorkflowEditorPage() {
     localStorage.setItem(TOUR_DONE_KEY, '1');
   };
 
-  // Keyboard shortcut: Cmd+S to save
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
       if ((e.metaKey || e.ctrlKey) && e.key === 's') {
@@ -55,7 +55,7 @@ export function WorkflowEditorPage() {
   if (isLoading) {
     return (
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', color: 'var(--text-muted)' }}>
-        Loading workflow...
+        {t('pages.loadingWorkflow')}
       </div>
     );
   }
@@ -63,7 +63,7 @@ export function WorkflowEditorPage() {
   if (error) {
     return (
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', color: 'var(--accent-error)' }}>
-        Error: {error}
+        {t('pages.error')}: {error}
       </div>
     );
   }

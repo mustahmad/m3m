@@ -1,4 +1,5 @@
 import { Plus, Trash2 } from 'lucide-react';
+import { useI18n } from '../../../i18n/store';
 
 interface Props {
   nodeId: string;
@@ -7,6 +8,7 @@ interface Props {
 }
 
 export function SetDataConfig({ config, onChange }: Props) {
+  const { t } = useI18n();
   const assignments = (config.assignments as Array<{ field: string; value: string }>) || [{ field: '', value: '' }];
   const mode = (config.mode as string) || 'set';
 
@@ -27,27 +29,27 @@ export function SetDataConfig({ config, onChange }: Props) {
   return (
     <>
       <div className="config-field">
-        <label>Mode</label>
+        <label>{t('configs.setData.mode')}</label>
         <select value={mode} onChange={(e) => onChange({ ...config, mode: e.target.value })}>
-          <option value="set">Set (keep existing + add new)</option>
-          <option value="merge">Merge</option>
-          <option value="replace">Replace (only new fields)</option>
+          <option value="set">{t('configs.setData.modeSet')}</option>
+          <option value="merge">{t('configs.setData.modeMerge')}</option>
+          <option value="replace">{t('configs.setData.modeReplace')}</option>
         </select>
       </div>
       <div className="config-field">
-        <label>Assignments</label>
+        <label>{t('configs.setData.assignments')}</label>
         {assignments.map((a, i) => (
           <div key={i} className="assignment-row">
             <input
               value={a.field}
               onChange={(e) => updateAssignment(i, 'field', e.target.value)}
-              placeholder="field.name"
+              placeholder={t('configs.setData.fieldPlaceholder')}
             />
             <span style={{ color: 'var(--text-muted)' }}>=</span>
             <input
               value={a.value}
               onChange={(e) => updateAssignment(i, 'value', e.target.value)}
-              placeholder="value or {{input.x}}"
+              placeholder={t('configs.setData.valuePlaceholder')}
             />
             {assignments.length > 1 && (
               <button className="btn-icon" onClick={() => removeAssignment(i)}>
@@ -57,7 +59,7 @@ export function SetDataConfig({ config, onChange }: Props) {
           </div>
         ))}
         <button className="btn btn-sm" onClick={addAssignment} style={{ marginTop: 4 }}>
-          <Plus size={12} /> Add Field
+          <Plus size={12} /> {t('configs.setData.addField')}
         </button>
       </div>
     </>

@@ -1,6 +1,7 @@
 import { X } from 'lucide-react';
 import { useWorkflowStore } from '../../stores/workflowStore';
 import { NODE_DEFINITIONS, type NodeType } from '@m3m/shared';
+import { useI18n } from '../../i18n/store';
 import { WebhookTriggerConfig } from './configs/WebhookTriggerConfig';
 import { HttpRequestConfig } from './configs/HttpRequestConfig';
 import { CodeFunctionConfig } from './configs/CodeFunctionConfig';
@@ -62,6 +63,7 @@ export function NodeConfigPanel() {
   const selectNode = useWorkflowStore((s) => s.selectNode);
   const nodeOutputs = useWorkflowStore((s) => s.nodeOutputs);
   const nodeStatuses = useWorkflowStore((s) => s.nodeStatuses);
+  const { t } = useI18n();
 
   const node = nodes.find((n) => n.id === selectedNodeId);
   if (!node || !selectedNodeId) return null;
@@ -86,7 +88,7 @@ export function NodeConfigPanel() {
       {def && (
         <div style={{ padding: '8px 16px', fontSize: 12, color: 'var(--text-secondary)', borderBottom: '1px solid var(--border-default)' }}>
           <span style={{ display: 'inline-block', width: 8, height: 8, borderRadius: '50%', background: def.color, marginRight: 6 }} />
-          {def.description}
+          {t(`nodes.${node.type}.description`)}
         </div>
       )}
 
@@ -103,8 +105,8 @@ export function NodeConfigPanel() {
       {(output || status) && (
         <div className="execution-result">
           <h4>
-            Execution Result
-            {status && <span className={`status-badge ${status}`} style={{ marginLeft: 8 }}>{status}</span>}
+            {t('executionResult')}
+            {status && <span className={`status-badge ${status}`} style={{ marginLeft: 8 }}>{t(`status.${status}`)}</span>}
           </h4>
           {output && (
             <pre>{JSON.stringify(output, null, 2)}</pre>

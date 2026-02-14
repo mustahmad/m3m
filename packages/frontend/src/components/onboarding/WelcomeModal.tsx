@@ -1,18 +1,23 @@
 import { Workflow, Zap, MousePointerClick, Cable, Settings, Play } from 'lucide-react';
+import { useI18n } from '../../i18n/store';
+import { NODE_DEFINITIONS } from '@m3m/shared';
 
 interface WelcomeModalProps {
   onClose: () => void;
   onCreateDemo: () => void;
 }
 
+const showcaseNodes = ['webhookTrigger', 'httpRequest', 'codeFunction', 'ifCondition', 'setData', 'merge'] as const;
+
 export function WelcomeModal({ onClose, onCreateDemo }: WelcomeModalProps) {
+  const { t } = useI18n();
   return (
     <div className="modal-overlay" onClick={onClose}>
       <div className="welcome-modal" onClick={(e) => e.stopPropagation()}>
         <div className="welcome-header">
           <span className="welcome-logo">m3m</span>
-          <h2>Welcome to m3m</h2>
-          <p className="welcome-subtitle">Visual workflow automation platform</p>
+          <h2>{t('onboarding.welcomeTitle')}</h2>
+          <p className="welcome-subtitle">{t('onboarding.welcomeSubtitle')}</p>
         </div>
 
         <div className="welcome-steps">
@@ -21,8 +26,8 @@ export function WelcomeModal({ onClose, onCreateDemo }: WelcomeModalProps) {
               <MousePointerClick size={20} />
             </div>
             <div>
-              <h4>1. Create a Workflow</h4>
-              <p>Click "New Workflow" to create your first automation</p>
+              <h4>{t('onboarding.step1Title')}</h4>
+              <p>{t('onboarding.step1Desc')}</p>
             </div>
           </div>
 
@@ -31,8 +36,8 @@ export function WelcomeModal({ onClose, onCreateDemo }: WelcomeModalProps) {
               <Zap size={20} />
             </div>
             <div>
-              <h4>2. Drag & Drop Nodes</h4>
-              <p>Drag nodes from the left sidebar onto the canvas to build your workflow</p>
+              <h4>{t('onboarding.step2Title')}</h4>
+              <p>{t('onboarding.step2Desc')}</p>
             </div>
           </div>
 
@@ -41,8 +46,8 @@ export function WelcomeModal({ onClose, onCreateDemo }: WelcomeModalProps) {
               <Cable size={20} />
             </div>
             <div>
-              <h4>3. Connect Nodes</h4>
-              <p>Drag from one node's handle to another to create connections</p>
+              <h4>{t('onboarding.step3Title')}</h4>
+              <p>{t('onboarding.step3Desc')}</p>
             </div>
           </div>
 
@@ -51,8 +56,8 @@ export function WelcomeModal({ onClose, onCreateDemo }: WelcomeModalProps) {
               <Settings size={20} />
             </div>
             <div>
-              <h4>4. Configure</h4>
-              <p>Click any node to open its settings panel on the right</p>
+              <h4>{t('onboarding.step4Title')}</h4>
+              <p>{t('onboarding.step4Desc')}</p>
             </div>
           </div>
 
@@ -61,28 +66,30 @@ export function WelcomeModal({ onClose, onCreateDemo }: WelcomeModalProps) {
               <Play size={20} />
             </div>
             <div>
-              <h4>5. Run</h4>
-              <p>Hit "Run" to execute your workflow and see results in real-time</p>
+              <h4>{t('onboarding.step5Title')}</h4>
+              <p>{t('onboarding.step5Desc')}</p>
             </div>
           </div>
         </div>
 
         <div className="welcome-nodes">
-          <h4>Available Nodes</h4>
+          <h4>{t('onboarding.availableNodes')}</h4>
           <div className="welcome-node-grid">
-            <span className="welcome-node-tag" style={{ borderColor: '#ff6d5a' }}>Webhook Trigger</span>
-            <span className="welcome-node-tag" style={{ borderColor: '#7c5cfc' }}>HTTP Request</span>
-            <span className="welcome-node-tag" style={{ borderColor: '#ff9f43' }}>Code</span>
-            <span className="welcome-node-tag" style={{ borderColor: '#00c9a7' }}>IF Condition</span>
-            <span className="welcome-node-tag" style={{ borderColor: '#0abde3' }}>Set Data</span>
-            <span className="welcome-node-tag" style={{ borderColor: '#a29bfe' }}>Merge</span>
+            {showcaseNodes.map((key) => {
+              const def = NODE_DEFINITIONS[key];
+              return (
+                <span key={key} className="welcome-node-tag" style={{ borderColor: def.color }}>
+                  {t(`nodes.${key}.label`)}
+                </span>
+              );
+            })}
           </div>
         </div>
 
         <div className="welcome-actions">
-          <button className="btn" onClick={onClose}>Get Started</button>
+          <button className="btn" onClick={onClose}>{t('onboarding.getStarted')}</button>
           <button className="btn btn-primary" onClick={onCreateDemo}>
-            <Workflow size={14} /> Try Demo Workflow
+            <Workflow size={14} /> {t('onboarding.tryDemo')}
           </button>
         </div>
       </div>

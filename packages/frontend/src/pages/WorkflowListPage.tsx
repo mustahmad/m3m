@@ -4,6 +4,7 @@ import { Plus, Workflow, Trash2 } from 'lucide-react';
 import { workflowsApi } from '../api/workflows';
 import { WelcomeModal } from '../components/onboarding/WelcomeModal';
 import { DEMO_WORKFLOW_NAME, DEMO_WORKFLOW_GRAPH } from '../components/onboarding/demoWorkflow';
+import { useI18n } from '../i18n/store';
 
 const WELCOME_KEY = 'm3m_welcome_shown';
 
@@ -23,6 +24,7 @@ export function WorkflowListPage() {
   const [showWelcome, setShowWelcome] = useState(false);
   const [newName, setNewName] = useState('');
   const navigate = useNavigate();
+  const { t } = useI18n();
 
   const load = useCallback(() => {
     setIsLoading(true);
@@ -31,7 +33,6 @@ export function WorkflowListPage() {
 
   useEffect(() => { load(); }, [load]);
 
-  // Show welcome modal on first visit
   useEffect(() => {
     if (!localStorage.getItem(WELCOME_KEY)) {
       setShowWelcome(true);
@@ -60,7 +61,7 @@ export function WorkflowListPage() {
 
   const handleDelete = async (e: React.MouseEvent, id: string) => {
     e.stopPropagation();
-    if (!confirm('Delete this workflow?')) return;
+    if (!confirm(t('pages.deleteConfirm'))) return;
     await workflowsApi.delete(id);
     load();
   };
@@ -73,19 +74,19 @@ export function WorkflowListPage() {
           Workflows
         </h2>
         <button className="btn btn-primary" onClick={() => setShowCreate(true)}>
-          <Plus size={14} /> New Workflow
+          <Plus size={14} /> {t('pages.createWorkflow')}
         </button>
       </div>
 
       {isLoading ? (
-        <div style={{ color: 'var(--text-muted)', textAlign: 'center', padding: 40 }}>Loading...</div>
+        <div style={{ color: 'var(--text-muted)', textAlign: 'center', padding: 40 }}>{t('common.loading')}</div>
       ) : workflows.length === 0 ? (
         <div className="empty-state">
           <Workflow size={48} style={{ marginBottom: 16, opacity: 0.3 }} />
-          <h3>No workflows yet</h3>
-          <p>Create your first workflow to get started with automation</p>
+          <h3>{t('pages.noWorkflows')}</h3>
+          <p>{t('pages.noWorkflowsDesc')}</p>
           <button className="btn btn-primary" onClick={() => setShowCreate(true)}>
-            <Plus size={14} /> Create Workflow
+            <Plus size={14} /> {t('pages.createWorkflow')}
           </button>
         </div>
       ) : (
@@ -94,13 +95,13 @@ export function WorkflowListPage() {
             <div key={wf.id} className="workflow-card" onClick={() => navigate(`/workflows/${wf.id}`)}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
                 <div className="workflow-card-name">{wf.name}</div>
-                <button className="btn-icon" onClick={(e) => handleDelete(e, wf.id)} title="Delete">
+                <button className="btn-icon" onClick={(e) => handleDelete(e, wf.id)} title={t('common.delete')}>
                   <Trash2 size={14} />
                 </button>
               </div>
-              <div className="workflow-card-desc">{wf.description || 'No description'}</div>
+              <div className="workflow-card-desc">{wf.description || t('pages.noDescription')}</div>
               <div className="workflow-card-meta">
-                <span>{wf.is_active ? '● Active' : '○ Inactive'}</span>
+                <span>{wf.is_active ? `● ${t('pages.active')}` : `○ ${t('pages.inactive')}`}</span>
                 <span>{new Date(wf.updated_at).toLocaleDateString()}</span>
               </div>
             </div>
@@ -111,20 +112,20 @@ export function WorkflowListPage() {
       {showCreate && (
         <div className="modal-overlay" onClick={() => setShowCreate(false)}>
           <div className="modal" onClick={(e) => e.stopPropagation()}>
-            <h3>Create New Workflow</h3>
+            <h3>{t('pages.createNewWorkflow')}</h3>
             <div className="config-field">
-              <label>Name</label>
+              <label>{t('common.name')}</label>
               <input
                 value={newName}
                 onChange={(e) => setNewName(e.target.value)}
-                placeholder="My Workflow"
+                placeholder={t('pages.myWorkflow')}
                 autoFocus
                 onKeyDown={(e) => e.key === 'Enter' && handleCreate()}
               />
             </div>
             <div className="modal-actions">
-              <button className="btn" onClick={() => setShowCreate(false)}>Cancel</button>
-              <button className="btn btn-primary" onClick={handleCreate}>Create</button>
+              <button className="btn" onClick={() => setShowCreate(false)}>{t('common.cancel')}</button>
+              <button className="btn btn-primary" onClick={handleCreate}>{t('common.create')}</button>
             </div>
           </div>
         </div>
