@@ -6,6 +6,7 @@ const categories = [
   { key: 'action', label: 'Actions' },
   { key: 'logic', label: 'Logic' },
   { key: 'transform', label: 'Transform' },
+  { key: 'ai', label: 'AI' },
 ] as const;
 
 export function Sidebar() {

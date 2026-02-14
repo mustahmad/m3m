@@ -1,18 +1,39 @@
-import { useParams } from 'react-router-dom';
-import { useEffect, useCallback } from 'react';
+import { useParams, useSearchParams } from 'react-router-dom';
+import { useEffect, useCallback, useState } from 'react';
 import { Header } from '../components/layout/Header';
 import { Sidebar } from '../components/layout/Sidebar';
 import { WorkflowCanvas } from '../components/editor/WorkflowCanvas';
 import { NodeConfigPanel } from '../components/panels/NodeConfigPanel';
+import { EditorTour } from '../components/onboarding/EditorTour';
 import { useWorkflow } from '../hooks/useWorkflow';
 import { useExecution } from '../hooks/useExecution';
 import { useWorkflowStore } from '../stores/workflowStore';
 
+const TOUR_DONE_KEY = 'm3m_tour_done';
+
 export function WorkflowEditorPage() {
   const { workflowId } = useParams();
+  const [searchParams] = useSearchParams();
   const { isLoading, error, save } = useWorkflow(workflowId);
   const { execute } = useExecution();
   const selectedNodeId = useWorkflowStore((s) => s.selectedNodeId);
+  const [showTour, setShowTour] = useState(false);
+
+  // Show tour if ?tour=1 or if never shown before
+  useEffect(() => {
+    if (!isLoading && !error) {
+      const tourRequested = searchParams.get('tour') === '1';
+      const tourDone = localStorage.getItem(TOUR_DONE_KEY);
+      if (tourRequested || !tourDone) {
+        setTimeout(() => setShowTour(true), 500);
+      }
+    }
+  }, [isLoading, error, searchParams]);
+
+  const completeTour = () => {
+    setShowTour(false);
+    localStorage.setItem(TOUR_DONE_KEY, '1');
+  };
 
   // Keyboard shortcut: Cmd+S to save
   useEffect(() => {
@@ -49,12 +70,13 @@ export function WorkflowEditorPage() {
 
   return (
     <div className="editor-layout">
-      <Header onSave={save} onRun={handleRun} />
+      <Header onSave={save} onRun={handleRun} onHelp={() => setShowTour(true)} />
       <div className="editor-body">
         <Sidebar />
         <WorkflowCanvas />
         {selectedNodeId && <NodeConfigPanel />}
       </div>
+      {showTour && <EditorTour onComplete={completeTour} />}
     </div>
   );
 }

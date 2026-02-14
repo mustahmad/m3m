@@ -7,6 +7,22 @@ import { CodeFunctionConfig } from './configs/CodeFunctionConfig';
 import { IfConditionConfig } from './configs/IfConditionConfig';
 import { SetDataConfig } from './configs/SetDataConfig';
 import { MergeConfig } from './configs/MergeConfig';
+import {
+  ScheduleTriggerConfig,
+  DelayConfig,
+  SwitchConfig,
+  LoopConfig,
+  FilterConfig,
+  SortConfig,
+  SplitConfig,
+  AggregateConfig,
+  AiLlmConfig,
+  AiClassifierConfig,
+  AiSummarizeConfig,
+  EmailSendConfig,
+  LogConfig,
+  ErrorTriggerConfig,
+} from './configs/GenericConfigs';
 import type { ComponentType } from 'react';
 
 interface ConfigPanelProps {
@@ -22,6 +38,20 @@ const CONFIG_COMPONENTS: Record<string, ComponentType<ConfigPanelProps>> = {
   ifCondition: IfConditionConfig,
   setData: SetDataConfig,
   merge: MergeConfig,
+  scheduleTrigger: ScheduleTriggerConfig,
+  delay: DelayConfig,
+  switch: SwitchConfig,
+  loop: LoopConfig,
+  filter: FilterConfig,
+  sort: SortConfig,
+  split: SplitConfig,
+  aggregate: AggregateConfig,
+  aiLlm: AiLlmConfig,
+  aiClassifier: AiClassifierConfig,
+  aiSummarize: AiSummarizeConfig,
+  emailSend: EmailSendConfig,
+  log: LogConfig,
+  errorTrigger: ErrorTriggerConfig,
 };
 
 export function NodeConfigPanel() {

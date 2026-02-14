@@ -2,6 +2,10 @@ import { useEffect, useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Plus, Workflow, Trash2 } from 'lucide-react';
 import { workflowsApi } from '../api/workflows';
+import { WelcomeModal } from '../components/onboarding/WelcomeModal';
+import { DEMO_WORKFLOW_NAME, DEMO_WORKFLOW_GRAPH } from '../components/onboarding/demoWorkflow';
+
+const WELCOME_KEY = 'm3m_welcome_shown';
 
 interface WorkflowItem {
   id: string;
@@ -16,6 +20,7 @@ export function WorkflowListPage() {
   const [workflows, setWorkflows] = useState<WorkflowItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [showCreate, setShowCreate] = useState(false);
+  const [showWelcome, setShowWelcome] = useState(false);
   const [newName, setNewName] = useState('');
   const navigate = useNavigate();
 
@@ -25,6 +30,25 @@ export function WorkflowListPage() {
   }, []);
 
   useEffect(() => { load(); }, [load]);
+
+  // Show welcome modal on first visit
+  useEffect(() => {
+    if (!localStorage.getItem(WELCOME_KEY)) {
+      setShowWelcome(true);
+    }
+  }, []);
+
+  const dismissWelcome = () => {
+    setShowWelcome(false);
+    localStorage.setItem(WELCOME_KEY, '1');
+  };
+
+  const createDemo = async () => {
+    dismissWelcome();
+    const workflow = await workflowsApi.create({ name: DEMO_WORKFLOW_NAME, description: 'A demo workflow showing IF branching and Code nodes' });
+    await workflowsApi.update(workflow.id, { graph: DEMO_WORKFLOW_GRAPH });
+    navigate(`/workflows/${workflow.id}?tour=1`);
+  };
 
   const handleCreate = async () => {
     if (!newName.trim()) return;
@@ -104,6 +128,10 @@ export function WorkflowListPage() {
             </div>
           </div>
         </div>
+      )}
+
+      {showWelcome && (
+        <WelcomeModal onClose={dismissWelcome} onCreateDemo={createDemo} />
       )}
     </div>
   );

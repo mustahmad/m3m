@@ -1,13 +1,14 @@
 import { Link } from 'react-router-dom';
-import { Save, Play, ArrowLeft } from 'lucide-react';
+import { Save, Play, ArrowLeft, HelpCircle } from 'lucide-react';
 import { useWorkflowStore } from '../../stores/workflowStore';
 
 interface HeaderProps {
   onSave: () => void;
   onRun: () => void;
+  onHelp?: () => void;
 }
 
-export function Header({ onSave, onRun }: HeaderProps) {
+export function Header({ onSave, onRun, onHelp }: HeaderProps) {
   const workflowName = useWorkflowStore((s) => s.workflowName);
   const setWorkflowName = useWorkflowStore((s) => s.setWorkflowName);
   const isDirty = useWorkflowStore((s) => s.isDirty);
@@ -27,6 +28,11 @@ export function Header({ onSave, onRun }: HeaderProps) {
         {isDirty && <span style={{ color: 'var(--accent-warning)', fontSize: 11, marginLeft: 8 }}>unsaved</span>}
       </div>
       <div className="header-actions">
+        {onHelp && (
+          <button className="btn-icon" onClick={onHelp} title="Show tutorial">
+            <HelpCircle size={18} />
+          </button>
+        )}
         <button className="btn" onClick={onSave} title="Save (Cmd+S)">
           <Save size={14} /> Save
         </button>
