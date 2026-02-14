@@ -301,5 +301,6 @@ export const ru: Translations = {
     applyWorkflow: 'Применить на холст',
     inputPlaceholder: 'Опишите нужную автоматизацию...',
     openBuilder: 'ИИ-конструктор',
+    groq: 'Groq (бесплатно)',
   },
 };

@@ -299,6 +299,7 @@ export const en = {
     applyWorkflow: 'Apply to Canvas',
     inputPlaceholder: 'Describe the automation you need...',
     openBuilder: 'AI Builder',
+    groq: 'Groq (free)',
   },
 } as const;
 

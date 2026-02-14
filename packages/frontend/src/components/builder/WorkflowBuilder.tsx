@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { X, Send, Loader2, Bot, Sparkles, Settings2 } from 'lucide-react';
 import { useI18n } from '../../i18n/store';
-import { generateWorkflow, type PlacedWorkflow } from './generateWorkflow';
+import { generateWorkflow, type PlacedWorkflow, type AiProvider } from './generateWorkflow';
 
 interface Message {
   role: 'user' | 'assistant' | 'error';
@@ -23,8 +23,8 @@ export function WorkflowBuilder({ onClose, onApply }: WorkflowBuilderProps) {
   const [isLoading, setIsLoading] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
   const [apiKey, setApiKey] = useState(() => localStorage.getItem(API_KEY_STORAGE) || '');
-  const [provider, setProvider] = useState<'openai' | 'anthropic'>(() =>
-    (localStorage.getItem(PROVIDER_STORAGE) as 'openai' | 'anthropic') || 'openai'
+  const [provider, setProvider] = useState<AiProvider>(() =>
+    (localStorage.getItem(PROVIDER_STORAGE) as AiProvider) || 'groq'
   );
   const [lastWorkflow, setLastWorkflow] = useState<PlacedWorkflow | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -122,7 +122,8 @@ export function WorkflowBuilder({ onClose, onApply }: WorkflowBuilderProps) {
           <div className="builder-settings">
             <div className="config-field">
               <label>{t('builder.provider')}</label>
-              <select value={provider} onChange={(e) => setProvider(e.target.value as any)}>
+              <select value={provider} onChange={(e) => setProvider(e.target.value as AiProvider)}>
+                <option value="groq">{t('builder.groq')}</option>
                 <option value="openai">OpenAI</option>
                 <option value="anthropic">Anthropic (Claude)</option>
               </select>
@@ -133,7 +134,7 @@ export function WorkflowBuilder({ onClose, onApply }: WorkflowBuilderProps) {
                 type="password"
                 value={apiKey}
                 onChange={(e) => setApiKey(e.target.value)}
-                placeholder="sk-..."
+                placeholder={provider === 'groq' ? 'gsk_...' : 'sk-...'}
               />
             </div>
             <button className="btn btn-sm btn-primary" onClick={saveSettings}>{t('common.save')}</button>

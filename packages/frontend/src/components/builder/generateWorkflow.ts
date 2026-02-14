@@ -178,9 +178,38 @@ function layoutNodes(generated: GeneratedWorkflow): PlacedWorkflow {
   return { name: generated.name, nodes, edges };
 }
 
+export type AiProvider = 'openai' | 'anthropic' | 'groq';
+
+async function callOpenAICompatible(
+  url: string,
+  apiKey: string,
+  model: string,
+  description: string,
+): Promise<string> {
+  const res = await fetch(url, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${apiKey}`,
+    },
+    body: JSON.stringify({
+      model,
+      temperature: 0.2,
+      max_tokens: 4096,
+      messages: [
+        { role: 'system', content: SYSTEM_PROMPT },
+        { role: 'user', content: description },
+      ],
+    }),
+  });
+  const data = await res.json() as any;
+  if (data.error) throw new Error(data.error.message || 'API error');
+  return data.choices?.[0]?.message?.content || '';
+}
+
 export async function generateWorkflow(
   description: string,
-  provider: 'openai' | 'anthropic',
+  provider: AiProvider,
   apiKey: string,
   model?: string,
 ): Promise<PlacedWorkflow> {
@@ -204,26 +233,20 @@ export async function generateWorkflow(
     const data = await res.json() as any;
     if (data.error) throw new Error(data.error.message || 'Anthropic API error');
     responseText = data.content?.[0]?.text || '';
+  } else if (provider === 'groq') {
+    responseText = await callOpenAICompatible(
+      'https://api.groq.com/openai/v1/chat/completions',
+      apiKey,
+      model || 'llama-3.3-70b-versatile',
+      description,
+    );
   } else {
-    const res = await fetch('https://api.openai.com/v1/chat/completions', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${apiKey}`,
-      },
-      body: JSON.stringify({
-        model: model || 'gpt-4o',
-        temperature: 0.2,
-        max_tokens: 4096,
-        messages: [
-          { role: 'system', content: SYSTEM_PROMPT },
-          { role: 'user', content: description },
-        ],
-      }),
-    });
-    const data = await res.json() as any;
-    if (data.error) throw new Error(data.error.message || 'OpenAI API error');
-    responseText = data.choices?.[0]?.message?.content || '';
+    responseText = await callOpenAICompatible(
+      'https://api.openai.com/v1/chat/completions',
+      apiKey,
+      model || 'gpt-4o',
+      description,
+    );
   }
 
   // Extract JSON from response (handle potential markdown wrapping)
