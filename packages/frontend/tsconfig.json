@@ -1,0 +1,15 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "jsx": "react-jsx",
+    "outDir": "./dist",
+    "rootDir": "./src",
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["./src/*"],
+      "@m3m/shared": ["../shared/src"]
+    }
+  },
+  "include": ["src"],
+  "references": [{ "path": "../shared" }]
+}
